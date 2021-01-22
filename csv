@@ -1,20 +1,19 @@
 #!/bin/bash
 
-if [ "$(ls *.csv 2> /dev/null | wc -l)" = "0" ]; then
+if [ "$(find -mindepth 1 -maxdepth 1 -type f -name "*.csv" 2> /dev/null | wc -l)" = "0" ]; then
 	echo "There are no CSV files in this directory." ; exit
 fi
 
 echo "Please select a CSV file: "
-list=$(ls *csv)
+list=$(find . -mindepth 1 -maxdepth 1 -type f -name "*.csv")
 n=1
 
-for ext in $list
-do
-echo "$n. $ext"
-file[n]=$ext
-n=$(( n + 1 ))
-done
+while read file; do
+    echo "$n. $file"
+    file[n]=$file
+    n=$(( n + 1 ))
+done <<< $list
 
 read sel
 
-cat ${file[$sel]} | sed -e 's/,,/, ,/g' | column -s, -t | less -#5 -N -S
+cat "${file[$sel]}" | sed -e 's/,,/, ,/g' | column -s, -t | less -#5 -N -S
